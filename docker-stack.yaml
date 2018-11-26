@@ -1,0 +1,34 @@
+version: '3.7'
+services:
+  redis:
+    image: redis:5.0.1-alpine
+    environment:
+      - REDIS_MASTER_NAME=redis-master
+      - REDIS_SENTINEL_PORT=26379
+      - REDIS_SERVICE_NAME={{.Service.Name}}
+      - SLOT={{.Task.Slot}}
+      - MASTER_SLOT=1
+      #- ENV REDIS_SENTINEL_IP redis-sentinel
+      #- ENV REDIS_SENTINEL_PORT 26379
+    deploy:
+      replicas: 3
+      restart_policy:
+        condition: any
+      update_config:
+        parallelism: 1
+        delay: 10s
+    ports:
+      - "6379:6379"
+    networks:
+      - redis-network
+    configs:
+      - source: redis-cluster-conf
+        target: /redis/rabbitmq.conf
+configs:
+  redis-cluster-conf:
+    file: redis-cluster/redis.conf
+networks:
+  redis-network:
+    driver: overlay
+# volumes:
+  # NFS/CloudStor Call
