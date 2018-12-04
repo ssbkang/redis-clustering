@@ -38,14 +38,14 @@ services:
           redis_master_init=$$(nslookup tasks.redis-master-init 127.0.0.11 | tail -n +5 | awk '{print $$3}')
 
           if [ $$redis_master_init ]; then
-            sed -i "s/{{ REDIS_IP }}/$$redis_master_init/g" /etc/sentinel.conf            
+            sed -i "s/{{ MASTER_IP }}/$$redis_master_init/g" /etc/sentinel.conf            
           else
             sentinel_node_list=$$(nslookup tasks.redis-sentinel 127.0.0.11 | tail -n +5 | awk '{print $$3}')
             for sentinel_node in $$sentinel_node_list; do
                 master_info=$$(redis-cli -h $$sentinel_node -p 26379 sentinel get-master-addr-by-name redis-cluster)
                 if [ "$$master_info" ]; then
                   master_ip=$$(echo $$master_info | awk '{print $$1}')
-                  sed -i "s/{{ REDIS_IP }}/$$master_ip/g" /etc/sentinel.conf  
+                  sed -i "s/{{ MASTER_IP }}/$$master_ip/g" /etc/sentinel.conf  
                   break
                 fi
             done
