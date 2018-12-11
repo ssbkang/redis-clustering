@@ -20,7 +20,7 @@ services:
             master_info=$$(redis-cli -h redis-sentinel -p 26379 sentinel get-master-addr-by-name redis-cluster)
             master_ip=$$(echo $$master_info | awk '{print $$1}')            
           fi
-          redis-server /etc/redis.conf --slaveof $$master_ip 6379
+          redis-server /etc/redis.conf --slaveof $$master_ip 6379 --appendonly yes
     deploy:
       mode: global
     ports:
