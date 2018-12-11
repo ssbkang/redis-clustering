@@ -3,6 +3,8 @@ version: '3.7'
 services:
   redis-cluster:
     image: redis:5.0.1-alpine
+    volumes:
+      - redis-data:/data
     entrypoint:
       - /bin/sh
       - -c
@@ -67,4 +69,7 @@ configs:
     file: sentinel.conf
 networks:
   internal:
+    external: true
+volumes:
+  redis-data:
     external: true
